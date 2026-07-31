@@ -1,0 +1,9 @@
+spring:
+  ai:
+    mcp:
+      client:
+        enabled: false # Disables MCP client bean creation during tests
+    ollama:
+      chat:
+        options:
+          temperature: 0.2

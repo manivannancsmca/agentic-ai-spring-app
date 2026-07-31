@@ -6,7 +6,7 @@ spring:
     name: ai-agent-service
   ai:
     ollama:
-      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11435}
       chat:
         model: ${SPRING_AI_OLLAMA_CHAT_MODEL:llama3.1:latest}
         options:
@@ -16,8 +16,7 @@ spring:
     mcp:
       client:
         enabled: true
-        toolcallback:
-          enabled: true
+        type: SYNC
         sse:
           connections:
             user-service:
@@ -34,7 +33,7 @@ spring:
 logging:
   level:
     org.springframework.ai: DEBUG
-    com.example: DEBUG
+    com.ai.agent: DEBUG
 
 management:
   endpoints:
