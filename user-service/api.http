@@ -1,0 +1,50 @@
+### Variables
+@baseUrl = http://localhost:8081
+@dockerUrl = http://user-service:8081
+@contentType = application/json
+
+### ─── READ ALL USERS ───
+### Returns all seeded users (john_doe, jane_smith, bob_wilson)
+GET {{baseUrl}}/api/users
+Accept: {{contentType}}
+
+### ─── READ USER BY ID ───
+### Fetch user 1 (john_doe)
+GET {{baseUrl}}/api/users/1
+Accept: {{contentType}}
+
+### ─── READ USER BY ID (non-existent) ───
+### Should return 404 - tests error handling
+GET {{baseUrl}}/api/users/999
+Accept: {{contentType}}
+
+### ─── CREATE NEW USER ───
+### Creates a new active user
+POST {{baseUrl}}/api/users
+Content-Type: {{contentType}}
+
+{
+  "username": "alice_wonder",
+  "email": "alice@example.com",
+  "fullName": "Alice Wonderland"
+}
+
+### ─── CREATE DUPLICATE USER ───
+### Should fail due to unique constraint on username/email
+POST {{baseUrl}}/api/users
+Content-Type: {{contentType}}
+
+{
+  "username": "john_doe",
+  "email": "duplicate@example.com",
+  "fullName": "Duplicate User"
+}
+
+### ─── MCP TOOL DISCOVERY (SSE) ───
+### Verifies MCP server is exposing tools; returns tool list
+GET {{baseUrl}}/mcp/sse
+Accept: text/event-stream
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}
