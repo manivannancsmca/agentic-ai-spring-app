@@ -1,6 +1,7 @@
 package com.notification.service.app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,17 @@ public class NotificationService {
                 .build();
         
         return notificationRepository.save(notification);
+    }
+
+    @Transactional(readOnly = true)
+    public Notification getNotificationById(Long id) {
+        return notificationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Notification not found: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Notification> listNotifications() {
+        return notificationRepository.findAll();
     }
     
     private boolean simulateSend() {
