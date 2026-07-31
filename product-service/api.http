@@ -1,0 +1,58 @@
+### Variables
+@baseUrl = http://localhost:8082
+@dockerUrl = http://product-service:8082
+@contentType = application/json
+
+### ─── READ ALL PRODUCTS ───
+### Returns Laptop Pro, Wireless Mouse, USB-C Hub
+GET {{baseUrl}}/api/products
+Accept: {{contentType}}
+
+### ─── READ PRODUCT BY ID ───
+### Fetch product 1 (Laptop Pro, $1299.99, stock 50)
+GET {{baseUrl}}/api/products/1
+Accept: {{contentType}}
+
+### ─── READ PRODUCT BY ID ───
+### Fetch product 2 (Wireless Mouse, $29.99, stock 200)
+GET {{baseUrl}}/api/products/2
+Accept: {{contentType}}
+
+### ─── CREATE NEW PRODUCT ───
+### Adds a new product to catalog
+POST {{baseUrl}}/api/products
+Content-Type: {{contentType}}
+
+{
+  "name": "Mechanical Keyboard",
+  "description": "RGB backlit mechanical keyboard with blue switches",
+  "price": 89.99,
+  "stockQuantity": 75,
+  "category": "Accessories"
+}
+
+### ─── UPDATE STOCK ───
+### Decrement Laptop Pro stock from 50 → 45 (simulating a sale)
+PUT {{baseUrl}}/api/products/1/stock
+Content-Type: {{contentType}}
+
+{
+  "quantity": 45
+}
+
+### ─── UPDATE STOCK (invalid product) ───
+### Should return 404
+PUT {{baseUrl}}/api/products/999/stock
+Content-Type: {{contentType}}
+
+{
+  "quantity": 10
+}
+
+### ─── MCP TOOL DISCOVERY (SSE) ───
+GET {{baseUrl}}/mcp/sse
+Accept: text/event-stream
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}

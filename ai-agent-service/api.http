@@ -1,0 +1,57 @@
+### Variables
+@baseUrl = http://localhost:8080
+@contentType = application/json
+
+### ─── AGENT: PLACE A COMPLETE ORDER ───
+### The agent should orchestrate: get_user → get_product → create_order → process_payment → notify
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "Place an order for user 1 to buy 1 unit of product 3"
+}
+
+### ─── AGENT: CHECK ORDER STATUS ───
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "What is the status of order 2?"
+}
+
+### ─── AGENT: LIST ALL PRODUCTS ───
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "Show me all available products"
+}
+
+### ─── AGENT: CHECK USER DETAILS ───
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "Get details for user 2"
+}
+
+### ─── AGENT: COMPLEX MULTI-STEP QUERY ───
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "Create an order for jane_smith buying 2 wireless mice, then tell me the total and payment status"
+}
+
+### ─── AGENT: STREAMING RESPONSE ───
+### Returns Server-Sent Events (SSE) for real-time token streaming
+POST {{baseUrl}}/api/agent/chat/stream
+Content-Type: {{contentType}}
+
+{
+  "message": "List all completed orders and their payment details"
+}
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}

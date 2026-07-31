@@ -1,0 +1,72 @@
+### Variables
+@baseUrl = http://localhost:8085
+@dockerUrl = http://notification-service:8085
+@contentType = application/json
+
+### ─── READ ALL NOTIFICATIONS ───
+### Returns 5 seeded notifications (EMAIL, SMS, PUSH)
+GET {{baseUrl}}/api/notifications
+Accept: {{contentType}}
+
+### ─── READ NOTIFICATION BY ID ───
+### Notification 1: Welcome email to john_doe
+GET {{baseUrl}}/api/notifications/1
+Accept: {{contentType}}
+
+### ─── READ NOTIFICATION BY ID ───
+### Notification 3: SMS payment confirmation to jane_smith
+GET {{baseUrl}}/api/notifications/3
+Accept: {{contentType}}
+
+### ─── READ NOTIFICATION BY ID (non-existent) ───
+GET {{baseUrl}}/api/notifications/999
+Accept: {{contentType}}
+
+### ─── SEND EMAIL NOTIFICATION ───
+POST {{baseUrl}}/api/notifications
+Content-Type: {{contentType}}
+
+{
+  "userId": 1,
+  "type": "EMAIL",
+  "message": "Your order has been shipped and will arrive in 2 business days."
+}
+
+### ─── SEND SMS NOTIFICATION ───
+POST {{baseUrl}}/api/notifications
+Content-Type: {{contentType}}
+
+{
+  "userId": 2,
+  "type": "SMS",
+  "message": "Your verification code is 48291."
+}
+
+### ─── SEND PUSH NOTIFICATION ───
+POST {{baseUrl}}/api/notifications
+Content-Type: {{contentType}}
+
+{
+  "userId": 3,
+  "type": "PUSH",
+  "message": "Your item is back in stock!"
+}
+
+### ─── SEND NOTIFICATION (invalid type) ───
+### Should fail with bad request due to enum constraint
+POST {{baseUrl}}/api/notifications
+Content-Type: {{contentType}}
+
+{
+  "userId": 1,
+  "type": "SMOKE_SIGNAL",
+  "message": "This should fail."
+}
+
+### ─── MCP TOOL DISCOVERY (SSE) ───
+GET {{baseUrl}}/mcp/sse
+Accept: text/event-stream
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}

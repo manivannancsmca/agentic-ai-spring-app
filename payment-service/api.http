@@ -1,0 +1,63 @@
+### Variables
+@baseUrl = http://localhost:8084
+@dockerUrl = http://payment-service:8084
+@contentType = application/json
+
+### ─── READ ALL PAYMENTS ───
+### Returns 4 seeded payments (2 completed, 1 pending, 1 failed)
+GET {{baseUrl}}/api/payments
+Accept: {{contentType}}
+
+### ─── READ PAYMENT BY ID ───
+### Payment 1: order 1, $1299.99, COMPLETED, CREDIT_CARD
+GET {{baseUrl}}/api/payments/1
+Accept: {{contentType}}
+
+### ─── READ PAYMENT BY ORDER ID ───
+### Lookup payment for order 2 ($89.97, PAYPAL, COMPLETED)
+GET {{baseUrl}}/api/payments/order/2
+Accept: {{contentType}}
+
+### ─── READ PAYMENT BY ORDER ID (pending) ───
+### Order 3 payment is still PENDING
+GET {{baseUrl}}/api/payments/order/3
+Accept: {{contentType}}
+
+### ─── PROCESS NEW PAYMENT ───
+### Simulate successful payment for a new order
+POST {{baseUrl}}/api/payments
+Content-Type: {{contentType}}
+
+{
+  "orderId": 5,
+  "amount": 59.99,
+  "method": "CREDIT_CARD"
+}
+
+### ─── PROCESS NEW PAYMENT (PAYPAL) ───
+POST {{baseUrl}}/api/payments
+Content-Type: {{contentType}}
+
+{
+  "orderId": 6,
+  "amount": 149.99,
+  "method": "PAYPAL"
+}
+
+### ─── PROCESS NEW PAYMENT (DEBIT_CARD) ───
+POST {{baseUrl}}/api/payments
+Content-Type: {{contentType}}
+
+{
+  "orderId": 7,
+  "amount": 12.50,
+  "method": "DEBIT_CARD"
+}
+
+### ─── MCP TOOL DISCOVERY (SSE) ───
+GET {{baseUrl}}/mcp/sse
+Accept: text/event-stream
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}

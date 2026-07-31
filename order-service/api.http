@@ -1,0 +1,76 @@
+### Variables
+@baseUrl = http://localhost:8083
+@dockerUrl = http://order-service:8083
+@contentType = application/json
+
+### ─── READ ALL ORDERS ───
+### Returns 5 seeded orders with various statuses
+GET {{baseUrl}}/api/orders
+Accept: {{contentType}}
+
+### ─── READ ORDER BY ID ───
+### Order 1: john_doe, Laptop Pro, COMPLETED
+GET {{baseUrl}}/api/orders/1
+Accept: {{contentType}}
+
+### ─── READ ORDER BY ID ───
+### Order 4: bob_wilson, CANCELLED (payment failed)
+GET {{baseUrl}}/api/orders/4
+Accept: {{contentType}}
+
+### ─── READ ORDER BY ID (non-existent) ───
+GET {{baseUrl}}/api/orders/999
+Accept: {{contentType}}
+
+### ─── CREATE ORDER ───
+### Full orchestration: validates user, checks stock, processes payment, sends notification
+### Prerequisites: user 1 and product 2 must exist
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+
+{
+  "userId": 1,
+  "productId": 2,
+  "quantity": 2
+}
+
+### ─── CREATE ORDER ───
+### jane_smith (user 2) buys 1 USB-C Hub (product 3)
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+
+{
+  "userId": 2,
+  "productId": 3,
+  "quantity": 1
+}
+
+### ─── CREATE ORDER (insufficient stock) ───
+### Attempt to buy 999 Wireless Mice — should fail stock validation
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+
+{
+  "userId": 1,
+  "productId": 2,
+  "quantity": 999
+}
+
+### ─── CREATE ORDER (invalid user) ───
+### Should fail user validation
+POST {{baseUrl}}/api/orders
+Content-Type: {{contentType}}
+
+{
+  "userId": 999,
+  "productId": 1,
+  "quantity": 1
+}
+
+### ─── MCP TOOL DISCOVERY (SSE) ───
+GET {{baseUrl}}/mcp/sse
+Accept: text/event-stream
+
+### ─── HEALTH CHECK ───
+GET {{baseUrl}}/actuator/health
+Accept: {{contentType}}
