@@ -2,6 +2,7 @@ package com.payment.service.app.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -48,5 +49,16 @@ public class PaymentService {
     private boolean simulateGatewayCall() {
         // 90% success rate for simulation
         return Math.random() > 0.1;
+    }
+
+    @Transactional(readOnly = true)
+    public Payment getPaymentById(Long id) {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Payment> listPayments() {
+        return paymentRepository.findAll();
     }
 }
