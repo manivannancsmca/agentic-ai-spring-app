@@ -1,3 +1,44 @@
+server:
+  port: ${SERVER_PORT:8083}
+
 spring:
   application:
     name: order-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:rootpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+service:
+  urls:
+    user: ${USER_SERVICE_URL:http://localhost:8081}
+    product: ${PRODUCT_SERVICE_URL:http://localhost:8082}
+    payment: ${PAYMENT_SERVICE_URL:http://localhost:8084}
+    notification: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
+
+mcp:
+  server:
+    name: ${MCP_SERVER_NAME:order-service}
+    version: 1.0.0
+
+resilience4j:
+  retry:
+    instances:
+      serviceRetry:
+        max-attempts: 3
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+  circuitbreaker:
+    instances:
+      serviceCircuit:
+        failure-rate-threshold: 50
+        slow-call-rate-threshold: 80
+        slow-call-duration-threshold: 2s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        wait-duration-in-open-state: 10s
