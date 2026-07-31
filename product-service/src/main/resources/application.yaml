@@ -1,3 +1,24 @@
+server:
+  port: ${SERVER_PORT:8082}
+
 spring:
   application:
     name: product-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:rootpass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+mcp:
+  server:
+    name: ${MCP_SERVER_NAME:product-service}
+    version: 1.0.0
+
+logging:
+  level:
+    com.example: DEBUG
