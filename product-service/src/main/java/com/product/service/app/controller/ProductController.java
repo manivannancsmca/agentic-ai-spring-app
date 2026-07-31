@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.product.service.app.dto.CreateProductRequest;
 import com.product.service.app.dto.ProductDto;
 import com.product.service.app.dto.StockUpdateRequest;
 import com.product.service.app.service.ProductService;
@@ -54,14 +55,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateStock(id, request.getQuantity()));
     }
 
-    @Data
-    public static class CreateProductRequest {
-        private String name;
-        private String description;
-        private BigDecimal price;
-        private Integer stockQuantity;
-        private String category;
-    }
+    
 
    
 }
