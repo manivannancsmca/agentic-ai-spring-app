@@ -1,0 +1,153 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mcp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: platform_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - mcp-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: mcp-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - mcp-network
+    # Pull model on first start via entrypoint override in production
+    # For local dev, exec into container: ollama pull llama3.1
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mcp-mysql:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpass
+      - SERVER_PORT=8081
+      - MCP_SERVER_NAME=user-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mcp-mysql:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpass
+      - SERVER_PORT=8082
+      - MCP_SERVER_NAME=product-service
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mcp-mysql:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpass
+      - SERVER_PORT=8083
+      - USER_SERVICE_URL=http://user-service:8081
+      - PRODUCT_SERVICE_URL=http://product-service:8082
+      - PAYMENT_SERVICE_URL=http://payment-service:8084
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8085
+    depends_on:
+      - user-service
+      - product-service
+      - payment-service
+      - notification-service
+    networks:
+      - mcp-network
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mcp-mysql:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpass
+      - SERVER_PORT=8084
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mcp-mysql:3306/platform_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpass
+      - SERVER_PORT=8085
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - mcp-network
+
+  ai-agent-service:
+    build: ./ai-agent-service
+    container_name: ai-agent-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - OLLAMA_BASE_URL=http://mcp-ollama:11434
+      - USER_SERVICE_MCP_URL=http://user-service:8081
+      - PRODUCT_SERVICE_MCP_URL=http://product-service:8082
+      - ORDER_SERVICE_MCP_URL=http://order-service:8083
+      - PAYMENT_SERVICE_MCP_URL=http://payment-service:8084
+      - NOTIFICATION_SERVICE_MCP_URL=http://notification-service:8085
+      - SPRING_AI_OLLAMA_CHAT_MODEL=llama3.1:latest
+    depends_on:
+      - ollama
+      - user-service
+      - product-service
+      - order-service
+      - payment-service
+      - notification-service
+    networks:
+      - mcp-network
+
+volumes:
+  mysql_data:
+  ollama_data:
+
+networks:
+  mcp-network:
+    driver: bridge
