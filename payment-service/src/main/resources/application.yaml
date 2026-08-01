@@ -1,5 +1,7 @@
 server:
   port: ${SERVER_PORT:8084}
+  tomcat:
+    connection-timeout: 600000
 
 spring:
   application:
@@ -12,8 +14,26 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  mvc:
+    async:
+      request-timeout: 1h  # No timeout
+  ai:
+    mcp:
+      server:
+        enabled: true          # ← REQUIRED to trigger auto-configuration
+        name: ${MCP_SERVER_NAME:payment-service}
+        version: 1.0.0
 
-mcp:
-  server:
-    name: ${MCP_SERVER_NAME:payment-service}
-    version: 1.0.0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

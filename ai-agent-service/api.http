@@ -62,5 +62,5 @@ POST {{baseUrl}}/api/agent/chat
 Content-Type: {{contentType}}
 
 {
-  "message": "Get details for user 1"
+  "message": "Get details for user 2"
 }
