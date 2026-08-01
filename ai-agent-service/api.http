@@ -55,3 +55,12 @@ Content-Type: {{contentType}}
 ### ─── HEALTH CHECK ───
 GET {{baseUrl}}/actuator/health
 Accept: {{contentType}}
+
+
+### ─── AGENT: COMPLEX MULTI-STEP QUERY ───
+POST {{baseUrl}}/api/agent/chat
+Content-Type: {{contentType}}
+
+{
+  "message": "Get details for user 1"
+}

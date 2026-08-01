@@ -1,9 +1,14 @@
 server:
   port: ${SERVER_PORT:8080}
+  tomcat:
+    connection-timeout: 600000
 
 spring:
   application:
     name: ai-agent-service
+  mvc:
+    async:
+      request-timeout: 1h  # No timeout
   ai:
     ollama:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11435}
@@ -16,19 +21,20 @@ spring:
     mcp:
       client:
         enabled: true
+        request-timeout: 300s # Increase from default 20s
         type: SYNC
         sse:
           connections:
             user-service:
               url: ${USER_SERVICE_MCP_URL:http://localhost:8081}
-            product-service:
-              url: ${PRODUCT_SERVICE_MCP_URL:http://localhost:8082}
-            order-service:
-              url: ${ORDER_SERVICE_MCP_URL:http://localhost:8083}
-            payment-service:
-              url: ${PAYMENT_SERVICE_MCP_URL:http://localhost:8084}
-            notification-service:
-              url: ${NOTIFICATION_SERVICE_MCP_URL:http://localhost:8085}
+            # product-service:
+            #   url: ${PRODUCT_SERVICE_MCP_URL:http://localhost:8082}
+            # order-service:
+            #   url: ${ORDER_SERVICE_MCP_URL:http://localhost:8083}
+            # payment-service:
+            #   url: ${PAYMENT_SERVICE_MCP_URL:http://localhost:8084}
+            # notification-service:
+            #   url: ${NOTIFICATION_SERVICE_MCP_URL:http://localhost:8085}
 
 logging:
   level:

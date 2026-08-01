@@ -1,5 +1,7 @@
 server:
   port: ${SERVER_PORT:8081}
+  tomcat:
+    connection-timeout: 600000
 
 spring:
   application:
@@ -17,21 +19,21 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
-
-mcp:
-  server:
-    name: ${MCP_SERVER_NAME:user-service}
-    version: 1.0.0
-
-logging:
-  level:
-    com.example: DEBUG
+  mvc:
+    async:
+      request-timeout: 1h  # No timeout
+  ai:
+    mcp:
+      server:
+        enabled: true          # ← REQUIRED to trigger auto-configuration
+        name: ${MCP_SERVER_NAME:user-service}
+        version: 1.0.0
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: "*"
   endpoint:
     health:
       show-details: always

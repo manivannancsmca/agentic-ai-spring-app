@@ -29,8 +29,14 @@ services:
       - ollama_data:/root/.ollama
     networks:
       - mcp-network
-    # Pull model on first start via entrypoint override in production
-    # For local dev, exec into container: ollama pull llama3.1
+    # Auto-pull the model on container start
+    entrypoint: >
+      sh -c "
+        ollama serve &
+        sleep 5 &&
+        ollama pull llama3.1 &&
+        wait
+      "
 
   # user-service:
   #   build: ./user-service
